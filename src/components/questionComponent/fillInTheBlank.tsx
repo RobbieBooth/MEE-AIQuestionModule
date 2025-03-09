@@ -48,7 +48,7 @@ export function FillInTheBlankQuestion({question, studentAnswer, questionSubmitt
     }, [question]);
 
 
-    let output = [];
+    let output:any[] = [];
     let lastIndex = 0;
 
     studentAnswer.forEach((option, i) => {

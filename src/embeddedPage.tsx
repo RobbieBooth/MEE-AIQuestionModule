@@ -121,7 +121,17 @@ const EmbeddedPage: React.FC = () => {
             throw new Error("Invalid or missing 'isSubmitted'. Expected a boolean.");
         }
 
-        // Validate studentAnswers exists and is an object (map)
+        // Validate isGenerated exists and is a boolean
+        if (typeof parsedData.isGenerated !== "boolean") {
+            throw new Error("Invalid or missing 'isGenerated'. Expected a boolean.");
+        }
+
+        // Validate receivedCode exists and is a boolean
+        if (typeof parsedData.receivedCode !== "boolean") {
+            throw new Error("Invalid or missing 'receivedCode'. Expected a boolean.");
+        }
+
+        // Validate studentAnswers exists and is an object
 
         if (parsedData.studentAnswers !== undefined && typeof parsedData.studentAnswers !== "object") {
             throw new Error("Invalid or missing 'studentAnswers'. Expected an object.");
@@ -129,6 +139,8 @@ const EmbeddedPage: React.FC = () => {
 
         return {
             ...parsedData,
+            isGenerated: parsedData.isGenerated,
+            receivedCode: parsedData.receivedCode,
             isSubmitted: parsedData.isSubmitted,
             studentAnswers: parsedData.studentAnswers ?? {}
         };
@@ -219,13 +231,44 @@ const EmbeddedPage: React.FC = () => {
         return <div><h1>An error occurred loading this module: {error.message}</h1></div>
     }
 
+    if (additionalData == undefined){
+        return (
+            <div className="flex items-center text-center justify-center">
+                <h2 className="flex pl-4 text-3xl font-semibold tracking-tight transition-colors">
+                    Error getting student's question data for this module.
+                </h2>
+            </div>
+        );
+    }
+
+    if (!additionalData.receivedCode){
+        return (
+            <div className="flex items-center text-center justify-center">
+                <h2 className="flex pl-4 text-3xl font-semibold tracking-tight transition-colors">
+                    Please submit code question, to generate questions. Or if you have we could be generating your questions...
+                </h2>
+            </div>
+        );
+    }
+
+    if(!additionalData.isGenerated){
+        return (
+            <div className="flex items-center text-center justify-center">
+                <span className="loader"></span>
+                <h2 className="flex pl-4 text-3xl font-semibold tracking-tight transition-colors">
+                    Generating questions...
+                </h2>
+            </div>
+        );
+    }
+
     return <div className="flex items-center justify-center min-h-screen py-10 w-full">
         <div className="space-y-8 max-w-3xl w-full">
             <QuestionPage questions={studentResponse}
-                          submitted={additionalData == undefined ? false : additionalData.isSubmitted}/>
+                          submitted={additionalData.isSubmitted}/>
         </div>
     </div>
         ;
-        };
+};
 
-        export default EmbeddedPage;
+export default EmbeddedPage;
